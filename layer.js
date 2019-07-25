@@ -1,6 +1,9 @@
 class Layer {
 
-    constructor(numberOfInputs, numberOfOutputs) {
+    constructor(numberOfInputs, numberOfOutputs, neuralNetwork, layerNumber) {
+	this.neuralNetwork = neuralNetwork;
+	this.layerNumber = layerNumber;
+
         this.numberOfInputs = numberOfInputs; //number of neurons in the previous layer
         this.numberOfOutputs = numberOfOutputs; //number of neurons in the current layer
 
@@ -13,6 +16,7 @@ class Layer {
         this.error = []; //error of the output layer
 
         this.InitilizeWeights(); //initilize weights
+
     }
 
     InitilizeWeights() {

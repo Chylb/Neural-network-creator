@@ -6,13 +6,36 @@ class NeuralNetwork {
         this.layers = []; //layers in the network #layer type
 
         this.trainingDataSet = [];
+        this.addButtons = [];
+        this.removeButtons = [];
 
-        for (let i = 0; i < layersSize.length; i++)
+        for (let i = 0; i < layersSize.length; i++) {
             this.layersSize[i] = layersSize[i];
+        }
+
+        for (let i = 0; i < layersSize.length; i++) {
+            this.layersSize[i] = layersSize[i];
+
+            let addButton = createButton('+');
+            addButton.position(this.neuronX(i, -1) - 10, this.neuronY(i, -1));
+            addButton.mousePressed(() => {
+                this.addButtonFunction(i)
+            });
+            this.addButtons.push(addButton);
+
+            let removeButton = createButton('-');
+            removeButton.position(this.neuronX(i, -1) + 10, this.neuronY(i, -1));
+            removeButton.mousePressed(() => {
+                this.removeButtonFunction(i)
+            });
+            this.removeButtons.push(removeButton);
+        }
 
         //creates neural layers
         for (let i = 0; i < layersSize.length - 1; i++)
-            this.layers.push(new Layer(layersSize[i], layersSize[i + 1]));
+            this.layers.push(new Layer(layersSize[i], layersSize[i + 1], this, i));
+
+        //this.addButtonFunction(1);
     }
 
     FeedForward(inputs) {
@@ -40,6 +63,7 @@ class NeuralNetwork {
     }
 
     show() {
+        background(0, 0, 0);
         for (let i = 0; i < this.layersSize.length; ++i) {
             for (let j = 0; j < this.layersSize[i]; ++j) {
                 strokeWeight(2);
@@ -52,12 +76,12 @@ class NeuralNetwork {
                     for (let k = 0; k < this.layers[i].numberOfOutputs; ++k) {
                         //drawing each weight as line with the width of weight;
                         strokeWeight(this.layers[i].weights[k][j]);
-			if(this.layers[i].weights[k][j] > 0) stroke(129,182,102);
-			else stroke(240,113,78);
+                        if (this.layers[i].weights[k][j] > 0) stroke(129, 182, 102);
+                        else stroke(240, 113, 78);
                         line(x, y, this.neuronX(i + 1, k), this.neuronY(i + 1, k));
                     }
                 }
-		stroke(255, 255, 255);
+                stroke(255, 255, 255);
                 strokeWeight(2);
                 ellipse(x, y, neuronRadius, neuronRadius);
             }
@@ -73,5 +97,49 @@ class NeuralNetwork {
     neuronY(x, y) {
         let l = this.layersSize[x];
         return 100 + 200 - (l - 1) * 22.5 + 45 * y;
+    }
+
+    addButtonFunction(i) {
+        this.layersSize[i] += 1;
+
+        if (i > 0) {
+            this.layers[i - 1].numberOfOutputs += 1;
+            this.layers[i - 1].weights.push([]);
+            this.layers[i - 1].weightsDelta.push([]);
+
+            let k = this.layers[i - 1].numberOfOutputs - 1;
+            for (let j = 0; j < this.layers[i - 1].numberOfInputs; j++)
+                this.layers[i - 1].weights[k][j] = (Math.random() - 0.5);
+        }
+
+        if (i < this.layersSize.length - 1) {
+            this.layers[i].numberOfInputs += 1;
+            let j = this.layers[i].numberOfInputs - 1;
+            for (let k = 0; k < this.layers[i].numberOfOutputs; k++) {
+                this.layers[i].weights[k][j] = (Math.random() - 0.5);
+            }
+        }
+
+	this.addButtons[i].position(this.neuronX(i, -1) - 10, this.neuronY(i, -1));
+	this.removeButtons[i].position(this.neuronX(i, -1) + 10, this.neuronY(i, -1));
+        this.show();
+    }
+
+    removeButtonFunction(i) {
+        this.layersSize[i] -= 1;
+
+        if (i > 0) {
+            this.layers[i - 1].numberOfOutputs -= 1;
+            this.layers[i - 1].weights.pop();
+            this.layers[i - 1].weightsDelta.pop();
+        }
+
+        if (i < this.layersSize.length - 1) {
+            this.layers[i].numberOfInputs -= 1;
+        }
+
+	this.addButtons[i].position(this.neuronX(i, -1) - 10, this.neuronY(i, -1));
+	this.removeButtons[i].position(this.neuronX(i, -1) + 10, this.neuronY(i, -1));
+        this.show();
     }
 }
