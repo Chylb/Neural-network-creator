@@ -33,7 +33,7 @@ class NeuralNetwork {
 
         //creates neural layers
         for (let i = 0; i < layersSize.length - 1; i++)
-            this.layers.push(new Layer(layersSize[i], layersSize[i + 1], this, i));
+            this.layers.push(new Layer(layersSize[i], layersSize[i + 1]));
 
         //this.addButtonFunction(1);
     }
@@ -90,7 +90,7 @@ class NeuralNetwork {
 
     //position of neuron on canvas;
     neuronX(x, y) {
-        let layerWidth = (WIDTH - 600) / this.layersSize.length;
+        let layerWidth = (WIDTH - 200) / this.layersSize.length;
         return 100 + layerWidth / 2 + layerWidth * x;
     }
 
@@ -132,6 +132,7 @@ class NeuralNetwork {
             this.layers[i - 1].numberOfOutputs -= 1;
             this.layers[i - 1].weights.pop();
             this.layers[i - 1].weightsDelta.pop();
+	    this.layers[i - 1].gamma.pop();
         }
 
         if (i < this.layersSize.length - 1) {

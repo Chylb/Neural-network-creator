@@ -1,8 +1,6 @@
 class Layer {
 
-    constructor(numberOfInputs, numberOfOutputs, neuralNetwork, layerNumber) {
-	this.neuralNetwork = neuralNetwork;
-	this.layerNumber = layerNumber;
+    constructor(numberOfInputs, numberOfOutputs) {
 
         this.numberOfInputs = numberOfInputs; //number of neurons in the previous layer
         this.numberOfOutputs = numberOfOutputs; //number of neurons in the current layer
