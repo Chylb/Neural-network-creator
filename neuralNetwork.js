@@ -6,36 +6,39 @@ class NeuralNetwork {
         this.layers = []; //layers in the network #layer type
 
         this.trainingDataSet = [];
-        this.addButtons = [];
-        this.removeButtons = [];
+        this.addNeuronButtons = [];
+        this.removeNeuronButtons = [];
+        this.addLayerButtons = [];
 
         for (let i = 0; i < layersSize.length; i++) {
             this.layersSize[i] = layersSize[i];
-        }
 
-        for (let i = 0; i < layersSize.length; i++) {
-            this.layersSize[i] = layersSize[i];
-
-            let addButton = createButton('+');
-            addButton.position(this.neuronX(i, -1) - 10, this.neuronY(i, -1));
-            addButton.mousePressed(() => {
-                this.addButtonFunction(i)
+            let addNeuronButton = createButton('+');
+            addNeuronButton.position(this.neuronX(i, -1) - 10, this.neuronY(i, -1));
+            addNeuronButton.mousePressed(() => {
+                this.addNeuron(i)
             });
-            this.addButtons.push(addButton);
+            this.addNeuronButtons.push(addNeuronButton);
 
-            let removeButton = createButton('-');
-            removeButton.position(this.neuronX(i, -1) + 10, this.neuronY(i, -1));
-            removeButton.mousePressed(() => {
-                this.removeButtonFunction(i)
+            let removeNeuronButton = createButton('-');
+            removeNeuronButton.position(this.neuronX(i, -1) + 10, this.neuronY(i, -1));
+            removeNeuronButton.mousePressed(() => {
+                this.removeNeuron(i)
             });
-            this.removeButtons.push(removeButton);
+            this.removeNeuronButtons.push(removeNeuronButton);
         }
 
         //creates neural layers
-        for (let i = 0; i < layersSize.length - 1; i++)
+        for (let i = 0; i < layersSize.length - 1; i++) {
             this.layers.push(new Layer(layersSize[i], layersSize[i + 1]));
 
-        //this.addButtonFunction(1);
+            let addLayerButton = createButton('+');
+            addLayerButton.position(this.neuronX(i, -2) / 2 + this.neuronX(i + 1, -2) / 2, this.neuronY(i, -2) / 2 + this.neuronY(i + 1, -2) / 2);
+            addLayerButton.mousePressed(() => {
+                this.addLayer(i)
+            });
+            this.addLayerButtons.push(addLayerButton);
+        }
     }
 
     FeedForward(inputs) {
@@ -99,7 +102,7 @@ class NeuralNetwork {
         return 100 + 200 - (l - 1) * 22.5 + 45 * y;
     }
 
-    addButtonFunction(i) {
+    addNeuron(i) {
         this.layersSize[i] += 1;
 
         if (i > 0) {
@@ -120,27 +123,134 @@ class NeuralNetwork {
             }
         }
 
-	this.addButtons[i].position(this.neuronX(i, -1) - 10, this.neuronY(i, -1));
-	this.removeButtons[i].position(this.neuronX(i, -1) + 10, this.neuronY(i, -1));
+        this.addNeuronButtons[i].position(this.neuronX(i, -1) - 10, this.neuronY(i, -1));
+        this.removeNeuronButtons[i].position(this.neuronX(i, -1) + 10, this.neuronY(i, -1));
+
+        //reset position of neigbouring addLayerButtons
+        if (i > 0)
+            this.addLayerButtons[i - 1].position(this.neuronX(i - 1, -2) / 2 + this.neuronX(i, -2) / 2, this.neuronY(i - 1, -2) / 2 + this.neuronY(i, -2) / 2);
+
+        if (i < this.layersSize.length - 1)
+            this.addLayerButtons[i].position(this.neuronX(i, -2) / 2 + this.neuronX(i + 1, -2) / 2, this.neuronY(i, -2) / 2 + this.neuronY(i + 1, -2) / 2);
+
         this.show();
     }
 
-    removeButtonFunction(i) {
+    removeNeuron(i) {
         this.layersSize[i] -= 1;
 
-        if (i > 0) {
-            this.layers[i - 1].numberOfOutputs -= 1;
-            this.layers[i - 1].weights.pop();
-            this.layers[i - 1].weightsDelta.pop();
-	    this.layers[i - 1].gamma.pop();
-        }
+        if (this.layersSize[i] > 0) {
 
-        if (i < this.layersSize.length - 1) {
-            this.layers[i].numberOfInputs -= 1;
-        }
+            if (i > 0) {
+                this.layers[i - 1].numberOfOutputs -= 1;
+                this.layers[i - 1].weights.pop();
+                this.layers[i - 1].weightsDelta.pop();
+                this.layers[i - 1].gamma.pop();
+            }
 
-	this.addButtons[i].position(this.neuronX(i, -1) - 10, this.neuronY(i, -1));
-	this.removeButtons[i].position(this.neuronX(i, -1) + 10, this.neuronY(i, -1));
+            if (i < this.layersSize.length - 1) {
+                this.layers[i].numberOfInputs -= 1;
+            }
+
+            this.addNeuronButtons[i].position(this.neuronX(i, -1) - 10, this.neuronY(i, -1));
+            this.removeNeuronButtons[i].position(this.neuronX(i, -1) + 10, this.neuronY(i, -1));
+        } else
+            this.removeLayer(i);
+
+        //reset position of neigbouring addLayerButtons
+        if (i > 0 && this.layersSize[i] > 0)
+            this.addLayerButtons[i - 1].position(this.neuronX(i - 1, -2) / 2 + this.neuronX(i, -2) / 2, this.neuronY(i - 1, -2) / 2 + this.neuronY(i, -2) / 2);
+
+        if (i < this.layersSize.length - 1)
+            this.addLayerButtons[i].position(this.neuronX(i, -2) / 2 + this.neuronX(i + 1, -2) / 2, this.neuronY(i, -2) / 2 + this.neuronY(i + 1, -2) / 2);
+
         this.show();
+    }
+
+    addLayer(i) {
+        this.layersSize.splice(i + 1, 0, 1);
+        this.layers[i].numberOfOutputs = 1;
+        this.layers.splice(i + 1, 0, new Layer(1, this.layersSize[i + 2]));
+
+        //Buttons adjustments
+        let n = this.layersSize.length;
+
+        let addNeuronButton = createButton('+');
+        addNeuronButton.position(0, 0);
+        addNeuronButton.mousePressed(() => {
+            this.addNeuron(n - 1)
+        });
+        this.addNeuronButtons.push(addNeuronButton);
+
+        let removeNeuronButton = createButton('-');
+        removeNeuronButton.position(0, 0);
+        removeNeuronButton.mousePressed(() => {
+            this.removeNeuron(n - 1)
+        });
+        this.removeNeuronButtons.push(removeNeuronButton);
+
+        let addLayerButton = createButton('+');
+        addLayerButton.position(0, 0);
+        addLayerButton.mousePressed(() => {
+            this.addLayer(n - 2)
+        });
+        this.addLayerButtons.push(addLayerButton);
+
+        for (let j = 0; j < this.layersSize.length - 1; j++) {
+            this.addNeuronButtons[j].position(this.neuronX(j, -1) - 10, this.neuronY(j, -1));
+            this.removeNeuronButtons[j].position(this.neuronX(j, -1) + 10, this.neuronY(j, -1));
+            this.addLayerButtons[j].position(this.neuronX(j, -2) / 2 + this.neuronX(j + 1, -2) / 2, this.neuronY(j, -2) / 2 + this.neuronY(j + 1, -2) / 2);
+        }
+        let j = this.layersSize.length - 1;
+        this.addNeuronButtons[j].position(this.neuronX(j, -1) - 10, this.neuronY(j, -1));
+        this.removeNeuronButtons[j].position(this.neuronX(j, -1) + 10, this.neuronY(j, -1));
+
+        this.show();
+    }
+
+    removeLayer(i) {
+        this.layersSize.splice(i, 1);
+
+        if (i == 0) {
+            this.layers.splice(i, 1);
+        } else if (i > 0 && i < this.layers.length) {
+
+            this.layers.splice(i, 1);
+            let previousNumberOfOutputs = this.layers[i - 1].numberOfOutputs;
+            this.layers[i - 1].numberOfOutputs = this.layersSize[i];
+
+            for (let j = previousNumberOfOutputs; j < this.layers[i - 1].numberOfOutputs; ++j) {
+                this.layers[i - 1].weights.push([]);
+                this.layers[i - 1].weightsDelta.push([]);
+                for (let k = 0; k < this.layers[i - 1].numberOfInputs; k++)
+                    this.layers[i - 1].weights[j][k] = (Math.random() - 0.5);
+            }
+        } else {
+
+            this.layers.pop();
+            let previousNumberOfOutputs = this.layers[i - 2].numberOfOutputs;
+            this.layers[i - 2].numberOfOutputs = this.layersSize[i - 1];
+
+            for (let j = previousNumberOfOutputs; j < this.layers[i - 2].numberOfOutputs; ++j) {
+                this.layers[i - 2].weights.push([]);
+                this.layers[i - 2].weightsDelta.push([]);
+                for (let k = 0; k < this.layers[i - 2].numberOfInputs; k++)
+                    this.layers[i - 2].weights[j][k] = (Math.random() - 0.5);
+            }
+        }
+
+        //Buttons adjustments
+        this.addNeuronButtons.pop().remove();
+        this.removeNeuronButtons.pop().remove();
+        this.addLayerButtons.pop().remove();
+
+        for (let j = 0; j < this.layersSize.length - 1; j++) {
+            this.addNeuronButtons[j].position(this.neuronX(j, -1) - 10, this.neuronY(j, -1));
+            this.removeNeuronButtons[j].position(this.neuronX(j, -1) + 10, this.neuronY(j, -1));
+            this.addLayerButtons[j].position(this.neuronX(j, -2) / 2 + this.neuronX(j + 1, -2) / 2, this.neuronY(j, -2) / 2 + this.neuronY(j + 1, -2) / 2);
+        }
+        let j = this.layersSize.length - 1;
+        this.addNeuronButtons[j].position(this.neuronX(j, -1) - 10, this.neuronY(j, -1));
+        this.removeNeuronButtons[j].position(this.neuronX(j, -1) + 10, this.neuronY(j, -1));
     }
 }

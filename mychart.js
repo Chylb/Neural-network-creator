@@ -1,5 +1,4 @@
 var ctx = document.getElementById("canvas").getContext('2d');
-var globalI = 0;
 
 var options = {
     responsive: true, 
