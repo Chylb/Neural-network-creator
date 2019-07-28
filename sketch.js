@@ -6,53 +6,42 @@ var neuronColor;
 var neuronRadius = 30;
 var learningIterations = 0;
 
+var input;
+var button;
+var addTrainingDataButton;
+
 async function setup() {
     var canvas = createCanvas(WIDTH, HEIGHT);
     canvas.parent('sketch-holder');
 
+    neuralNetwork = new NeuralNetwork([3, 5, 4, 1]);
+    neuralNetwork.addTrainingData("0,0,0;0");
+    neuralNetwork.addTrainingData("0,0,1;1");
+    neuralNetwork.addTrainingData("0,1,0;1");
+    neuralNetwork.addTrainingData("0,1,1;1");
+    neuralNetwork.addTrainingData("1,0,0;1");
+    neuralNetwork.addTrainingData("1,0,1;0");
+    neuralNetwork.addTrainingData("1,1,0;0");
+    neuralNetwork.addTrainingData("1,1,1;1");
+
+    button = createButton('Do 500 cycles of learning');
+    button.position(400, 10);
+    button.mousePressed(train);
+
+    trainingDataInput = createInput('Enter training data, example: 1,0,1;0');
+    trainingDataInput.size(240);
+
+    addTrainingDataButton = createButton('Add');
+    addTrainingDataButton.mousePressed(() => {
+        neuralNetwork.addTrainingData(trainingDataInput.value())
+    });
+
     neuronColor = color(0, 0, 0, 255);
 
     //neuralNetwork = new NeuralNetwork([1,2,3,4,5,6,7,8,9,10]);
-    neuralNetwork = new NeuralNetwork([3, 5, 4, 1]);
-
-    var button = createButton('Do 500 cycles of learning');
-    button.position(10, 10);
-    button.mousePressed(train);
 
     //dataSet[0] is input and dataSet[1] is expected output
-    neuralNetwork.trainingDataSet.push([
-        [0, 0, 0],
-        [0]
-    ]);
-    neuralNetwork.trainingDataSet.push([
-        [0, 0, 1],
-        [1]
-    ]);
-    neuralNetwork.trainingDataSet.push([
-        [0, 1, 0],
-        [1]
-    ]);
-    neuralNetwork.trainingDataSet.push([
-        [0, 1, 1],
-        [0]
-    ]);
-    neuralNetwork.trainingDataSet.push([
-        [1, 0, 0],
-        [1]
-    ]);
-    neuralNetwork.trainingDataSet.push([
-        [1, 0, 1],
-        [0]
-    ]);
-    neuralNetwork.trainingDataSet.push([
-        [1, 1, 0],
-        [0]
-    ]);
-    neuralNetwork.trainingDataSet.push([
-        [1, 1, 1],
-        [1]
-    ]);
-
+    neuralNetwork.addTrainingData()
     neuralNetwork.show();
 }
 
@@ -77,9 +66,9 @@ async function train() {
             learningIterations++;
             myChart.update();
         });
-        
+
         neuralNetwork.show();
-	if(learningIterations % 10 == 0) //sleep sleeps longer that I order to
+        if (learningIterations % 10 == 0) //sleep sleeps longer that I order to
             await sleep(0.1);
     }
 

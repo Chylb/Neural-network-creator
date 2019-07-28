@@ -9,6 +9,7 @@ class NeuralNetwork {
         this.addNeuronButtons = [];
         this.removeNeuronButtons = [];
         this.addLayerButtons = [];
+        this.removeTrainingDataButtons = [];
 
         for (let i = 0; i < layersSize.length; i++) {
             this.layersSize[i] = layersSize[i];
@@ -89,12 +90,41 @@ class NeuralNetwork {
                 ellipse(x, y, neuronRadius, neuronRadius);
             }
         }
+        this.showTrainingDataset();
+    }
+
+    showTrainingDataset() {
+        strokeWeight(1);
+        stroke('white');
+        textSize(32);
+        fill('white');
+        textAlign(LEFT, TOP);
+
+        text('Training data set', 30, 20);
+
+        textSize(22);
+
+        rectMode(CORNER);
+        let y = 60;
+
+        for (let trainingData of this.trainingDataSet) {
+            fill(color(0, 0, 0, 0));
+            rect(5, y, 150, 30);
+            rect(155, y, 150, 30);
+
+            fill('white');
+            text(trainingData[0], 10, y + 5);
+            text(trainingData[1], 160, y + 5);
+            y += 30;
+        }
+        trainingDataInput.position(15, y + 15);
+        addTrainingDataButton.position(265, y + 15);
     }
 
     //position of neuron on canvas;
     neuronX(x, y) {
-        let layerWidth = (WIDTH - 200) / this.layersSize.length;
-        return 100 + layerWidth / 2 + layerWidth * x;
+        let layerWidth = (WIDTH - 300 - 20) / this.layersSize.length;
+        return 300 + layerWidth / 2 + layerWidth * x;
     }
 
     neuronY(x, y) {
@@ -252,5 +282,37 @@ class NeuralNetwork {
         let j = this.layersSize.length - 1;
         this.addNeuronButtons[j].position(this.neuronX(j, -1) - 10, this.neuronY(j, -1));
         this.removeNeuronButtons[j].position(this.neuronX(j, -1) + 10, this.neuronY(j, -1));
+    }
+
+    addTrainingData(arg) {
+        try {
+            let res = arg.split(";");
+            let input = JSON.parse("[" + res[0] + "]");
+            let output = JSON.parse("[" + res[1] + "]");
+            let trainingData = [];
+            trainingData.push(input);
+            trainingData.push(output);
+
+            this.trainingDataSet.push(trainingData);
+
+            let removeTrainingDataButton = createButton('x');
+            removeTrainingDataButton.position(290, 70 + 30 * (this.trainingDataSet.length - 1));
+            //removeTrainingDataButton.position(265, 265);
+            let n = this.trainingDataSet.length - 1;
+            removeTrainingDataButton.mousePressed(() => {
+                this.removeTrainingData(n)
+            });
+            this.removeTrainingDataButtons.push(removeTrainingDataButton);
+            this.show();
+
+        } catch (error) {
+
+        }
+    }
+
+    removeTrainingData(i) {
+        this.trainingDataSet.splice(i, 1);
+        this.removeTrainingDataButtons.pop().remove();
+        this.show();
     }
 }
