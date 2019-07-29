@@ -68,10 +68,9 @@ class NeuralNetwork {
 
     show() {
         background(0, 0, 0);
+
         for (let i = 0; i < this.layersSize.length; ++i) {
             for (let j = 0; j < this.layersSize[i]; ++j) {
-                strokeWeight(2);
-                fill(neuronColor);
 
                 let x = this.neuronX(i, j);
                 let y = this.neuronY(i, j)
@@ -87,7 +86,44 @@ class NeuralNetwork {
                 }
                 stroke(255, 255, 255);
                 strokeWeight(2);
+                fill(neuronColor);
+
                 ellipse(x, y, neuronRadius, neuronRadius);
+            }
+        }
+        this.showTrainingDataset();
+    }
+
+    showActivation(inputs) {
+        background(0, 0, 0);
+
+        for (let i = 0; i < this.layersSize.length; ++i) {
+            for (let j = 0; j < this.layersSize[i]; ++j) {
+
+                let x = this.neuronX(i, j);
+                let y = this.neuronY(i, j)
+
+                if (i < this.layersSize.length - 1) {
+                    for (let k = 0; k < this.layers[i].numberOfOutputs; ++k) {
+                        //drawing each weight as line with the width of weight;
+                        strokeWeight(this.layers[i].weights[k][j]);
+                        if (this.layers[i].weights[k][j] > 0) stroke(129, 182, 102);
+                        else stroke(240, 113, 78);
+                        line(x, y, this.neuronX(i + 1, k), this.neuronY(i + 1, k));
+                    }
+                }
+
+                if (i == 0) { //input layer
+                    stroke(255, 255, 255);
+                    strokeWeight(2);
+                    fill(255 * inputs[j]);
+                    ellipse(x, y, neuronRadius, neuronRadius);
+                } else {
+                    stroke(255, 255, 255);
+                    strokeWeight(2);
+                    fill(255 * this.layers[i - 1].outputs[j]);
+                    ellipse(x, y, neuronRadius, neuronRadius);
+                }
             }
         }
         this.showTrainingDataset();
@@ -105,20 +141,24 @@ class NeuralNetwork {
         textSize(22);
 
         rectMode(CORNER);
-        let y = 60;
+        let i = 0;
 
         for (let trainingData of this.trainingDataSet) {
             fill(color(0, 0, 0, 0));
-            rect(5, y, 150, 30);
-            rect(155, y, 150, 30);
+            rect(5, i * 30 + 60, 150, 30);
+            rect(155, i * 30 + 60, 150, 30);
 
-            fill('white');
-            text(trainingData[0], 10, y + 5);
-            text(trainingData[1], 160, y + 5);
-            y += 30;
+            if (i == singleFeedForwardIteration) 
+                fill('yellow');
+            else 
+                fill('white');
+            
+            text(trainingData[0], 10, i * 30 + 65);
+            text(trainingData[1], 160, i * 30 + 65);
+            i += 1;
         }
-        trainingDataInput.position(15, y + 15);
-        addTrainingDataButton.position(265, y + 15);
+        trainingDataInput.position(15, i * 30 + 75);
+        addTrainingDataButton.position(265, i * 30 + 75);
     }
 
     //position of neuron on canvas;
@@ -305,9 +345,7 @@ class NeuralNetwork {
             this.removeTrainingDataButtons.push(removeTrainingDataButton);
             this.show();
 
-        } catch (error) {
-
-        }
+        } catch (error) {}
     }
 
     removeTrainingData(i) {

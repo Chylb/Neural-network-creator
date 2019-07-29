@@ -5,10 +5,12 @@ const HEIGHT = 900;
 var neuronColor;
 var neuronRadius = 30;
 var learningIterations = 0;
+var singleFeedForwardIteration = -1;
 
 var input;
 var button;
 var addTrainingDataButton;
+var singleFeedForwardButton;
 
 async function setup() {
     var canvas = createCanvas(WIDTH, HEIGHT);
@@ -28,6 +30,10 @@ async function setup() {
     button.position(400, 10);
     button.mousePressed(train);
 
+    singleFeedForwardButton = createButton('Single feedforward');
+    singleFeedForwardButton.position(400, 50);
+    singleFeedForwardButton.mousePressed(singleFeedForward);
+
     trainingDataInput = createInput('Enter training data, example: 1,0,1;0');
     trainingDataInput.size(240);
 
@@ -46,6 +52,7 @@ async function setup() {
 }
 
 async function train() {
+    singleFeedForwardIteration = -1;
     for (let i = 0; i < 500; i++) {
         MSE = 0;
         for (trainingData of neuralNetwork.trainingDataSet) {
@@ -67,7 +74,7 @@ async function train() {
             myChart.update();
         });
 
-        neuralNetwork.show();
+        neuralNetwork.show(true);
         if (learningIterations % 10 == 0) //sleep sleeps longer that I order to
             await sleep(0.1);
     }
@@ -76,7 +83,13 @@ async function train() {
     for (trainingData of neuralNetwork.trainingDataSet) {
         print(neuralNetwork.FeedForward(trainingData[0]));
     }
+}
 
+function singleFeedForward() {
+	singleFeedForwardIteration++;
+	singleFeedForwardIteration %= neuralNetwork.trainingDataSet.length;
+	neuralNetwork.FeedForward(neuralNetwork.trainingDataSet[singleFeedForwardIteration][0]);
+	neuralNetwork.showActivation(neuralNetwork.trainingDataSet[singleFeedForwardIteration][0]);	
 }
 
 function sleep(ms) {
