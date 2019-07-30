@@ -7,10 +7,12 @@ var neuronRadius = 30;
 var learningIterations = 0;
 var singleFeedForwardIteration = -1;
 
-var input;
-var button;
+var trainingDataInput;
+var learnButton;
 var addTrainingDataButton;
 var singleFeedForwardButton;
+var learningRateSlider;
+var cyclesInput;
 
 async function setup() {
     var canvas = createCanvas(WIDTH, HEIGHT);
@@ -26,20 +28,31 @@ async function setup() {
     neuralNetwork.addTrainingData("1,1,0;0");
     neuralNetwork.addTrainingData("1,1,1;1");
 
-    button = createButton('Do 500 cycles of learning');
-    button.position(400, 10);
-    button.mousePressed(train);
+    learnButton = createButton('Learn!');
+    learnButton.position(670, 560);
+    learnButton.mousePressed(train);
 
     singleFeedForwardButton = createButton('Single feedforward');
-    singleFeedForwardButton.position(400, 50);
+    singleFeedForwardButton.position(350, 585);
     singleFeedForwardButton.mousePressed(singleFeedForward);
 
     trainingDataInput = createInput('Enter training data, example: 1,0,1;0');
     trainingDataInput.size(240);
 
+    cyclesInput = createInput('100');
+    cyclesInput.size(40);
+    cyclesInput.position(620,560);
+
     addTrainingDataButton = createButton('Add');
     addTrainingDataButton.mousePressed(() => {
         neuralNetwork.addTrainingData(trainingDataInput.value())
+    });
+
+    learningRateSlider = createSlider(0, 1, 0.3, 0.001);
+    learningRateSlider.position(350, 640);
+    learningRateSlider.style('width', '300px');
+    learningRateSlider.input(() => {
+	neuralNetwork.show();
     });
 
     neuronColor = color(0, 0, 0, 255);
@@ -47,13 +60,13 @@ async function setup() {
     //neuralNetwork = new NeuralNetwork([1,2,3,4,5,6,7,8,9,10]);
 
     //dataSet[0] is input and dataSet[1] is expected output
-    neuralNetwork.addTrainingData()
+    neuralNetwork.addTrainingData();
     neuralNetwork.show();
 }
 
 async function train() {
     singleFeedForwardIteration = -1;
-    for (let i = 0; i < 500; i++) {
+    for (let i = 0; i < cyclesInput.value(); i++) {
         MSE = 0;
         for (trainingData of neuralNetwork.trainingDataSet) {
             let outputs = neuralNetwork.FeedForward(trainingData[0]);
@@ -94,4 +107,11 @@ function singleFeedForward() {
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function showGUI() {
+	fill('white');
+	strokeWeight(0.5);
+	text('Cycles of backpropagation:', 345, 550);
+	text('Learning rate: ' + learningRateSlider.value(), 345, 610);
 }

@@ -83,6 +83,6 @@ class Layer {
     UpdateWeights() {
         for (let i = 0; i < this.numberOfOutputs; i++) 
             for (let j = 0; j < this.numberOfInputs; j++) 
-                this.weights[i][j] -= this.weightsDelta[i][j] * 0.033;    
+                this.weights[i][j] -= this.weightsDelta[i][j] * learningRateSlider.value();    
     }
 }

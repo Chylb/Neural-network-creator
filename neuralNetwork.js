@@ -68,6 +68,7 @@ class NeuralNetwork {
 
     show() {
         background(0, 0, 0);
+	singleFeedForwardIteration = -1;
 
         for (let i = 0; i < this.layersSize.length; ++i) {
             for (let j = 0; j < this.layersSize[i]; ++j) {
@@ -87,11 +88,11 @@ class NeuralNetwork {
                 stroke(255, 255, 255);
                 strokeWeight(2);
                 fill(neuronColor);
-
                 ellipse(x, y, neuronRadius, neuronRadius);
             }
         }
         this.showTrainingDataset();
+	showGUI();
     }
 
     showActivation(inputs) {
@@ -127,6 +128,7 @@ class NeuralNetwork {
             }
         }
         this.showTrainingDataset();
+	showGUI();
     }
 
     showTrainingDataset() {
@@ -337,7 +339,6 @@ class NeuralNetwork {
 
             let removeTrainingDataButton = createButton('x');
             removeTrainingDataButton.position(290, 70 + 30 * (this.trainingDataSet.length - 1));
-            //removeTrainingDataButton.position(265, 265);
             let n = this.trainingDataSet.length - 1;
             removeTrainingDataButton.mousePressed(() => {
                 this.removeTrainingData(n)
