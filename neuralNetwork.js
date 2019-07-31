@@ -68,7 +68,7 @@ class NeuralNetwork {
 
     show() {
         background(0, 0, 0);
-	singleFeedForwardIteration = -1;
+        singleFeedForwardIteration = -1;
 
         for (let i = 0; i < this.layersSize.length; ++i) {
             for (let j = 0; j < this.layersSize[i]; ++j) {
@@ -92,7 +92,7 @@ class NeuralNetwork {
             }
         }
         this.showTrainingDataset();
-	showGUI();
+        showGUI();
     }
 
     showActivation(inputs) {
@@ -128,7 +128,7 @@ class NeuralNetwork {
             }
         }
         this.showTrainingDataset();
-	showGUI();
+        showGUI();
     }
 
     showTrainingDataset() {
@@ -150,11 +150,11 @@ class NeuralNetwork {
             rect(5, i * 30 + 60, 150, 30);
             rect(155, i * 30 + 60, 150, 30);
 
-            if (i == singleFeedForwardIteration) 
+            if (i == singleFeedForwardIteration)
                 fill('yellow');
-            else 
+            else
                 fill('white');
-            
+
             text(trainingData[0], 10, i * 30 + 65);
             text(trainingData[1], 160, i * 30 + 65);
             i += 1;
@@ -353,5 +353,18 @@ class NeuralNetwork {
         this.trainingDataSet.splice(i, 1);
         this.removeTrainingDataButtons.pop().remove();
         this.show();
+    }
+
+    destructor() {
+        for (let but of this.addNeuronButtons)
+            but.remove();
+        for (let but of this.removeNeuronButtons)
+            but.remove();
+        for (let but of this.addLayerButtons)
+            but.remove();
+        for (let but of this.removeTrainingDataButtons)
+            but.remove();
+        myChart.data.datasets[0].data = [];
+        myChart.update();
     }
 }

@@ -13,20 +13,11 @@ var addTrainingDataButton;
 var singleFeedForwardButton;
 var learningRateSlider;
 var cyclesInput;
+var networkSelect;
 
 async function setup() {
     var canvas = createCanvas(WIDTH, HEIGHT);
     canvas.parent('sketch-holder');
-
-    neuralNetwork = new NeuralNetwork([3, 5, 4, 1]);
-    neuralNetwork.addTrainingData("0,0,0;0");
-    neuralNetwork.addTrainingData("0,0,1;1");
-    neuralNetwork.addTrainingData("0,1,0;1");
-    neuralNetwork.addTrainingData("0,1,1;1");
-    neuralNetwork.addTrainingData("1,0,0;1");
-    neuralNetwork.addTrainingData("1,0,1;0");
-    neuralNetwork.addTrainingData("1,1,0;0");
-    neuralNetwork.addTrainingData("1,1,1;1");
 
     learnButton = createButton('Learn!');
     learnButton.position(670, 560);
@@ -41,7 +32,7 @@ async function setup() {
 
     cyclesInput = createInput('100');
     cyclesInput.size(40);
-    cyclesInput.position(620,560);
+    cyclesInput.position(620, 560);
 
     addTrainingDataButton = createButton('Add');
     addTrainingDataButton.mousePressed(() => {
@@ -52,15 +43,19 @@ async function setup() {
     learningRateSlider.position(350, 640);
     learningRateSlider.style('width', '300px');
     learningRateSlider.input(() => {
-	neuralNetwork.show();
+        neuralNetwork.show();
     });
+
+    networkSelect = createSelect();
+    networkSelect.position(350, 700);
+    networkSelect.option('XOR problem');
+    networkSelect.option('3-input XOR');
+    networkSelect.option('Custom network');
+    networkSelect.changed(selectNetwork);
 
     neuronColor = color(0, 0, 0, 255);
 
-    //neuralNetwork = new NeuralNetwork([1,2,3,4,5,6,7,8,9,10]);
-
-    //dataSet[0] is input and dataSet[1] is expected output
-    neuralNetwork.addTrainingData();
+    selectNetwork();
     neuralNetwork.show();
 }
 
@@ -87,7 +82,7 @@ async function train() {
             myChart.update();
         });
 
-        neuralNetwork.show(true);
+        neuralNetwork.show();
         if (learningIterations % 10 == 0) //sleep sleeps longer that I order to
             await sleep(0.1);
     }
@@ -99,10 +94,10 @@ async function train() {
 }
 
 function singleFeedForward() {
-	singleFeedForwardIteration++;
-	singleFeedForwardIteration %= neuralNetwork.trainingDataSet.length;
-	neuralNetwork.FeedForward(neuralNetwork.trainingDataSet[singleFeedForwardIteration][0]);
-	neuralNetwork.showActivation(neuralNetwork.trainingDataSet[singleFeedForwardIteration][0]);	
+    singleFeedForwardIteration++;
+    singleFeedForwardIteration %= neuralNetwork.trainingDataSet.length;
+    neuralNetwork.FeedForward(neuralNetwork.trainingDataSet[singleFeedForwardIteration][0]);
+    neuralNetwork.showActivation(neuralNetwork.trainingDataSet[singleFeedForwardIteration][0]);
 }
 
 function sleep(ms) {
@@ -110,8 +105,34 @@ function sleep(ms) {
 }
 
 function showGUI() {
-	fill('white');
-	strokeWeight(0.5);
-	text('Cycles of backpropagation:', 345, 550);
-	text('Learning rate: ' + learningRateSlider.value(), 345, 610);
+    fill('white');
+    strokeWeight(0.5);
+    text('Cycles of backpropagation:', 345, 550);
+    text('Learning rate: ' + learningRateSlider.value(), 345, 610);
+}
+
+function selectNetwork() {
+    try {
+        neuralNetwork.destructor();
+    } catch (e) {}
+
+    if (networkSelect.value() == "XOR problem") {
+        neuralNetwork = new NeuralNetwork([2, 2, 1]);
+        neuralNetwork.addTrainingData("0,0;0");
+        neuralNetwork.addTrainingData("0,1;1");
+        neuralNetwork.addTrainingData("1,0;1");
+        neuralNetwork.addTrainingData("1,1;0");
+    } else if (networkSelect.value() == "3-input XOR") {
+        neuralNetwork = new NeuralNetwork([3, 3, 1]);
+        neuralNetwork.addTrainingData("0,0,0;0");
+        neuralNetwork.addTrainingData("0,0,1;1");
+        neuralNetwork.addTrainingData("0,1,0;1");
+        neuralNetwork.addTrainingData("1,0,0;1");
+        neuralNetwork.addTrainingData("1,0,1;0");
+        neuralNetwork.addTrainingData("1,1,0;0");
+        neuralNetwork.addTrainingData("1,1,1;1");
+    } else if (networkSelect.value() == "Custom network") {
+        neuralNetwork = new NeuralNetwork([2, 3, 1]);
+    }
+    neuralNetwork.show();
 }
