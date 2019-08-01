@@ -14,6 +14,7 @@ var singleFeedForwardButton;
 var learningRateSlider;
 var cyclesInput;
 var networkSelect;
+var functionSelect;
 
 async function setup() {
     var canvas = createCanvas(WIDTH, HEIGHT);
@@ -53,8 +54,16 @@ async function setup() {
     networkSelect.option('Custom network');
     networkSelect.changed(selectNetwork);
 
+    functionSelect = createSelect();
+    functionSelect.position(350, 740);
+    functionSelect.option('TanH');
+    functionSelect.option('Sigmoid');
+    functionSelect.option('ArcTan');
+    functionSelect.changed(selectFunction);
+
     neuronColor = color(0, 0, 0, 255);
 
+    selectFunction();
     selectNetwork();
     neuralNetwork.show();
 }
@@ -135,4 +144,18 @@ function selectNetwork() {
         neuralNetwork = new NeuralNetwork([2, 3, 1]);
     }
     neuralNetwork.show();
+}
+
+function selectFunction() {
+
+    if (functionSelect.value() == "TanH") {
+        activationFunction = tanH;
+        derivative = tanHDer;
+    } else if (functionSelect.value() == "Sigmoid") {
+        activationFunction = sigmoid;
+        derivative = sigmoidDer;
+    } else if (functionSelect.value() == "ArcTan") {
+        activationFunction = arcTan;
+        derivative = arcTanDer;
+    }
 }

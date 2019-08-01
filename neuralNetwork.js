@@ -1,3 +1,31 @@
+//Activation functions
+var activationFunction;
+var derivative;
+
+function tanH(x) {
+    return Math.tanh(x);
+}
+
+function tanHDer(x) {
+    return 1 - (x * x);
+}
+
+function sigmoid(x) {
+    return 1 / (1 + Math.exp(-x));
+}
+
+function sigmoidDer(x) {
+    return sigmoid(x) * (1 - sigmoid(x));
+}
+
+function arcTan(x) {
+    return Math.atan(x) / Math.PI * 2; //making range from -1 to 1
+}
+
+function arcTanDer(x) {
+    return 1 / (x * x + 1) / Math.PI * 2;
+}
+
 class NeuralNetwork {
 
     constructor(layersSize) {
@@ -161,6 +189,7 @@ class NeuralNetwork {
         }
         trainingDataInput.position(15, i * 30 + 75);
         addTrainingDataButton.position(265, i * 30 + 75);
+        print("czemu to nie dziala");
     }
 
     //position of neuron on canvas;

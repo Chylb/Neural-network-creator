@@ -21,7 +21,7 @@ class Layer {
         for (let i = 0; i < this.numberOfOutputs; i++) {
             this.weights.push([]); //weights[numberOfOutputs][]
             this.weightsDelta.push([]); //weightsDelta[numberOfOutputs][]
-            for (let j = 0; j < this.numberOfInputs; j++) 
+            for (let j = 0; j < this.numberOfInputs; j++)
                 this.weights[i][j] = (Math.random() - 0.5);
         }
     }
@@ -33,17 +33,12 @@ class Layer {
         for (let i = 0; i < this.numberOfOutputs; i++) {
             this.outputs[i] = 0;
 
-            for (let j = 0; j < this.numberOfInputs; j++) 
+            for (let j = 0; j < this.numberOfInputs; j++)
                 this.outputs[i] += this.inputs[j] * this.weights[i][j];
-            
-            this.outputs[i] = (Math.tanh(this.outputs[i]));
+
+            this.outputs[i] = activationFunction(this.outputs[i]);
         }
         return this.outputs;
-    }
-
-    //TanH derivative
-    TanHDer(value) {
-        return 1 - (value * value);
     }
 
     //Back propagation for the output layer
@@ -54,12 +49,12 @@ class Layer {
 
         //Gamma calculation
         for (let i = 0; i < this.numberOfOutputs; i++)
-            this.gamma[i] = this.error[i] * this.TanHDer(this.outputs[i]);
+            this.gamma[i] = this.error[i] * derivative(this.outputs[i]);
 
         //Caluclating detla weights
-        for (let i = 0; i < this.numberOfOutputs; i++) 
-            for (let j = 0; j < this.numberOfInputs; j++) 
-                this.weightsDelta[i][j] = this.gamma[i] * this.inputs[j];              
+        for (let i = 0; i < this.numberOfOutputs; i++)
+            for (let j = 0; j < this.numberOfInputs; j++)
+                this.weightsDelta[i][j] = this.gamma[i] * this.inputs[j];
     }
 
     //Back propagation for the hidden layers
@@ -68,21 +63,21 @@ class Layer {
         for (let i = 0; i < this.numberOfOutputs; i++) {
             this.gamma[i] = 0;
 
-            for (let j = 0; j < gammaForward.length; j++) 
+            for (let j = 0; j < gammaForward.length; j++)
                 this.gamma[i] += gammaForward[j] * weightsFoward[j][i];
-            
-            this.gamma[i] *= this.TanHDer(this.outputs[i]);
+
+            this.gamma[i] *= derivative(this.outputs[i]);
         }
 
         //Calculating detla weights
-        for (let i = 0; i < this.numberOfOutputs; i++) 
-            for (let j = 0; j < this.numberOfInputs; j++) 
+        for (let i = 0; i < this.numberOfOutputs; i++)
+            for (let j = 0; j < this.numberOfInputs; j++)
                 this.weightsDelta[i][j] = this.gamma[i] * this.inputs[j];
     }
 
     UpdateWeights() {
-        for (let i = 0; i < this.numberOfOutputs; i++) 
-            for (let j = 0; j < this.numberOfInputs; j++) 
-                this.weights[i][j] -= this.weightsDelta[i][j] * learningRateSlider.value();    
+        for (let i = 0; i < this.numberOfOutputs; i++)
+            for (let j = 0; j < this.numberOfInputs; j++)
+                this.weights[i][j] -= this.weightsDelta[i][j] * learningRateSlider.value();
     }
 }
